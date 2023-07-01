@@ -26,31 +26,23 @@ type ListNode struct {
  * }
  */
 func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
-	dummyHeadL1, dummyHeadL2 := &ListNode{}, &ListNode{}
-	dummyHeadL1.Next = l1
-	dummyHeadL2.Next = l2
-	sub := 0
-	startL1, startL2 := dummyHeadL1, dummyHeadL2
-	for startL1.Next != nil && startL2.Next != nil {
-		startL1 = startL1.Next
-		startL2 = startL2.Next
-		tmp := startL1.Val + startL2.Val + sub
-		startL1.Val = tmp % 10
-		sub = tmp / 10
+	dummyHead := &ListNode{}
+	curr := dummyHead
+	sum := 0
+	for l1 != nil || l2 != nil || sum != 0 {
+		if l1 != nil {
+			sum = sum + l1.Val
+			l1 = l1.Next
+		}
+		if l2 != nil {
+			sum = sum + l2.Val
+			l2 = l2.Next
+		}
+		curr.Next = &ListNode{Val: sum % 10}
+		curr = curr.Next
+		sum /= 10
 	}
-	if startL2.Next != nil {
-		startL1.Next = startL2.Next
-	}
-	for startL1.Next != nil {
-		startL1 = startL1.Next
-		tmp := startL1.Val + sub
-		startL1.Val = tmp % 10
-		sub = tmp / 10
-	}
-	if sub != 0 {
-		startL1.Next = &ListNode{Val: sub}
-	}
-	return dummyHeadL1.Next
+	return dummyHead.Next
 }
 
 // @lc code=end
