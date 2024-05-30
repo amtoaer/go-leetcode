@@ -7,9 +7,9 @@ import (
 )
 
 /*
- * @lc app=leetcode.cn id=2981 lang=golang
+ * @lc app=leetcode.cn id=2982 lang=golang
  *
- * [2981] Find Longest Special Substring That Occurs Thrice I
+ * [2982] Find Longest Special Substring That Occurs Thrice II
  */
 
 // @lc code=start
