@@ -18,17 +18,18 @@ type Pair struct {
 }
 
 func kSmallestPairs(nums1 []int, nums2 []int, k int) [][]int {
-	getCompareValue := func(p Pair) int {
-		return nums1[p.i] + nums2[p.j]
+
+	better := func(a, b *Pair) bool {
+		return nums1[a.i]+nums2[a.j] < nums1[b.i]+nums2[b.j]
 	}
 
 	siftDown := func(pairs []Pair, start, end int) {
 		cur, next := start, start*2+1
 		for next <= end {
-			if next+1 <= end && getCompareValue(pairs[next+1]) < getCompareValue(pairs[next]) {
+			if next+1 <= end && better(&pairs[next+1], &pairs[next]) {
 				next++
 			}
-			if getCompareValue(pairs[next]) >= getCompareValue(pairs[cur]) {
+			if better(&pairs[cur], &pairs[next]) {
 				return
 			}
 			pairs[cur], pairs[next] = pairs[next], pairs[cur]
@@ -39,8 +40,8 @@ func kSmallestPairs(nums1 []int, nums2 []int, k int) [][]int {
 	siftUp := func(pairs []Pair, idx int) {
 		for idx > 0 {
 			parent := (idx - 1) / 2
-			if getCompareValue(pairs[idx]) >= getCompareValue(pairs[parent]) {
-				break
+			if better(&pairs[parent], &pairs[idx]) {
+				return
 			}
 			pairs[idx], pairs[parent] = pairs[parent], pairs[idx]
 			idx = parent
