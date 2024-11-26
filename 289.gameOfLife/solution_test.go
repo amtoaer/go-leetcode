@@ -2,56 +2,58 @@ package main
 
 import (
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 /*
  * @lc app=leetcode.cn id=289 lang=golang
+ * @lcpr version=20003
  *
- * [289] Game of Life
+ * [289] 生命游戏
  */
 
+// @lcpr-template-start
+
+// @lcpr-template-end
 // @lc code=start
 
-var direction = [][]int{
-	{0, 1},
-	{0, -1},
-	{1, 0},
-	{-1, 0},
-	{1, 1},
-	{1, -1},
-	{-1, 1},
-	{-1, -1},
+var directions = [][]int{
+	{-1, -1}, {-1, 0}, {-1, 1},
+	{0, -1}, {0, 1},
+	{1, -1}, {1, 0}, {1, 1},
 }
 
 func gameOfLife(board [][]int) {
+	countAlive := func(i, j int) int {
+		var cnt int
+		for _, direction := range directions {
+			iTarget, jTarget := i+direction[0], j+direction[1]
+			if !(iTarget >= 0 && iTarget < len(board) && jTarget >= 0 && jTarget < len(board[0])) {
+				continue
+			}
+			if board[iTarget][jTarget]&1 == 1 {
+				cnt++
+			}
+		}
+		return cnt
+	}
 	for i := 0; i < len(board); i++ {
 		for j := 0; j < len(board[0]); j++ {
-			alive := 0
-			for _, d := range direction {
-				ii, jj := i+d[0], j+d[1]
-				if ii < 0 || ii >= len(board) || jj < 0 || jj >= len(board[0]) {
-					continue
-				}
-				if board[ii][jj]&1 == 1 {
-					alive++
-				}
-			}
-			self := board[i][j]
-			target := 0
-			if self == 1 {
-				if alive < 2 || alive > 3 {
-					target = 0
-				} else {
-					target = 1
+			var alive int
+			cnt := countAlive(i, j)
+			if board[i][j]&1 == 1 {
+				// 本来是活的
+				alive = 1
+				if cnt < 2 || cnt > 3 {
+					alive = 0
 				}
 			} else {
-				if alive == 3 {
-					target = 1
+				// 本来是死的
+				alive = 0
+				if cnt == 3 {
+					alive = 1
 				}
 			}
-			board[i][j] |= target << 1
+			board[i][j] |= alive << 1
 		}
 	}
 	for i := 0; i < len(board); i++ {
@@ -63,18 +65,68 @@ func gameOfLife(board [][]int) {
 
 // @lc code=end
 
+/*
+// @lcpr case=start
+// [[0,1,0],[0,0,1],[1,1,1],[0,0,0]]\n
+// @lcpr case=end
+
+// @lcpr case=start
+// [[1,1],[1,0]]\n
+// @lcpr case=end
+
+*/
+
 func Test(t *testing.T) {
-	tc := []struct {
-		input  [][]int
-		output [][]int
+	tests := []struct {
+		board    [][]int
+		expected [][]int
 	}{
 		{
-			input:  [][]int{{0, 1, 0}, {0, 0, 1}, {1, 1, 1}, {0, 0, 0}},
-			output: [][]int{{0, 0, 0}, {1, 0, 1}, {0, 1, 1}, {0, 1, 0}},
+			board: [][]int{
+				{0, 1, 0},
+				{0, 0, 1},
+				{1, 1, 1},
+				{0, 0, 0},
+			},
+			expected: [][]int{
+				{0, 0, 0},
+				{1, 0, 1},
+				{0, 1, 1},
+				{0, 1, 0},
+			},
+		},
+		{
+			board: [][]int{
+				{1, 1},
+				{1, 0},
+			},
+			expected: [][]int{
+				{1, 1},
+				{1, 1},
+			},
+		},
+		{
+			board: [][]int{
+				{1, 0, 0},
+				{0, 1, 0},
+				{0, 0, 1},
+			},
+			expected: [][]int{
+				{0, 0, 0},
+				{0, 1, 0},
+				{0, 0, 0},
+			},
 		},
 	}
-	for _, tt := range tc {
-		gameOfLife(tt.input)
-		assert.Equal(t, tt.output, tt.input)
+
+	for _, test := range tests {
+		gameOfLife(test.board)
+		for i := range test.board {
+			for j := range test.board[i] {
+				if test.board[i][j] != test.expected[i][j] {
+					t.Errorf("expected %v, but got %v", test.expected, test.board)
+				}
+			}
+		}
 	}
 }

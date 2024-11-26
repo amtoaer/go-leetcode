@@ -2,47 +2,74 @@ package main
 
 import (
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 /*
  * @lc app=leetcode.cn id=3 lang=golang
+ * @lcpr version=20003
  *
- * [3] Longest Substring Without Repeating Characters
+ * [3] 无重复字符的最长子串
  */
 
+// @lcpr-template-start
+
+// @lcpr-template-end
 // @lc code=start
-
-func max(a, b int) int {
-	if a > b {
-		return a
-	}
-	return b
-}
-
 func lengthOfLongestSubstring(s string) int {
 	var (
-		m      = make(map[byte]int)
-		maxLen = 0
-		start  = 0
+		res   int
+		empty = struct{}{}
+		m     = make(map[byte]struct{})
 	)
-	for i := 0; i < len(s); i++ {
-		// 如果当前扫到的字符已经在子字符串间出现过，那么子字符串应该从出现位置的下个字符开始
-		if v, ok := m[s[i]]; ok && v >= start {
-			start = v + 1
+	for left, right := 0, 0; right < len(s); right++ {
+		for {
+			if _, ok := m[s[right]]; ok {
+				delete(m, s[left])
+				left++
+			} else {
+				break
+			}
 		}
-		// 记录下这个字符最后出现的位置
-		m[s[i]] = i
-		// 计算一次最大距离
-		maxLen = max(maxLen, i-start+1)
+		m[s[right]] = empty
+		res = max(res, right-left+1)
 	}
-	return maxLen
+	return res
 }
 
 // @lc code=end
 
+/*
+// @lcpr case=start
+// "abcabcbb"\n
+// @lcpr case=end
+
+// @lcpr case=start
+// "bbbbb"\n
+// @lcpr case=end
+
+// @lcpr case=start
+// "pwwkew"\n
+// @lcpr case=end
+
+*/
+
 func Test(t *testing.T) {
-	assert.Equal(t, 3, lengthOfLongestSubstring("abcabcbb"))
-	assert.Equal(t, 1, lengthOfLongestSubstring("bbbbb"))
+	tests := []struct {
+		input    string
+		expected int
+	}{
+		{"abcabcbb", 3},
+		{"bbbbb", 1},
+		{"pwwkew", 3},
+		{"", 0},
+		{"abcdef", 6},
+		{"aab", 2},
+		{"dvdf", 3},
+	}
+
+	for _, test := range tests {
+		if result := lengthOfLongestSubstring(test.input); result != test.expected {
+			t.Errorf("For input '%s', expected %d but got %d", test.input, test.expected, result)
+		}
+	}
 }
