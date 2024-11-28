@@ -2,49 +2,75 @@ package main
 
 import (
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 /*
  * @lc app=leetcode.cn id=402 lang=golang
+ * @lcpr version=20003
  *
- * [402] Remove K Digits
+ * [402] 移掉 K 位数字
  */
 
+// @lcpr-template-start
+
+// @lcpr-template-end
 // @lc code=start
 func removeKdigits(num string, k int) string {
-	var stack []byte
-	for i := 0; i < len(num); i++ {
-		for len(stack) > 0 && stack[len(stack)-1] > num[i] && k > 0 {
-			stack = stack[:len(stack)-1]
+	var nums []rune
+	for _, r := range num {
+		for len(nums) != 0 && nums[len(nums)-1] > r && k > 0 {
 			k--
+			nums = nums[:len(nums)-1]
 		}
-		stack = append(stack, num[i])
+		if len(nums) == 0 && r == '0' {
+			continue
+		}
+		nums = append(nums, r)
 	}
-	var zeroPos int
-	for zeroPos < len(stack) && stack[zeroPos] == '0' {
-		zeroPos++
-	}
-	if zeroPos >= len(stack)-k {
+	if k >= len(nums) {
 		return "0"
 	}
-	return string(stack[zeroPos : len(stack)-k])
+	if k > 0 {
+		nums = nums[:len(nums)-k]
+	}
+	return string(nums)
 }
 
 // @lc code=end
 
+/*
+// @lcpr case=start
+// "1432219"\n3\n
+// @lcpr case=end
+
+// @lcpr case=start
+// "10200"\n1\n
+// @lcpr case=end
+
+// @lcpr case=start
+// "10"\n2\n
+// @lcpr case=end
+
+*/
+
 func Test(t *testing.T) {
-	tc := []struct {
-		input  string
-		k      int
-		output string
+	tests := []struct {
+		num      string
+		k        int
+		expected string
 	}{
 		{"1432219", 3, "1219"},
 		{"10200", 1, "200"},
 		{"10", 2, "0"},
+		{"1234567890", 9, "0"},
+		{"112", 1, "11"},
+		{"9", 1, "0"},
 	}
-	for _, tt := range tc {
-		assert.Equal(t, tt.output, removeKdigits(tt.input, tt.k))
+
+	for _, test := range tests {
+		result := removeKdigits(test.num, test.k)
+		if result != test.expected {
+			t.Errorf("removeKdigits(%v, %v) = %v; expected %v", test.num, test.k, result, test.expected)
+		}
 	}
 }

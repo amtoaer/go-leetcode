@@ -2,34 +2,59 @@ package main
 
 import (
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 /*
  * @lc app=leetcode.cn id=26 lang=golang
+ * @lcpr version=20003
  *
- * [26] Remove Duplicates from Sorted Array
+ * [26] 删除有序数组中的重复项
  */
 
+// @lcpr-template-start
+
+// @lcpr-template-end
 // @lc code=start
 func removeDuplicates(nums []int) int {
-	if len(nums) == 0 {
-		return 0
-	}
-	start := 0
-	for idx := 1; idx < len(nums); idx++ {
-		if nums[idx] != nums[start] {
-			start++
-			nums[start] = nums[idx]
+	var left int
+	for right := 0; right < len(nums); right++ {
+		if right == 0 || nums[right] != nums[right-1] {
+			nums[left] = nums[right]
+			left++
 		}
 	}
-	return start + 1
+	return left
 }
 
 // @lc code=end
 
+/*
+// @lcpr case=start
+// [1,1,2]\n
+// @lcpr case=end
+
+// @lcpr case=start
+// [0,0,1,1,1,2,2,3,3,4]\n
+// @lcpr case=end
+
+*/
+
 func Test(t *testing.T) {
-	assert.Equal(t, 2, removeDuplicates([]int{1, 1, 2}))
-	assert.Equal(t, 5, removeDuplicates([]int{0, 0, 1, 1, 1, 2, 2, 3, 3, 4}))
+	tests := []struct {
+		input    []int
+		expected int
+	}{
+		{[]int{1, 1, 2}, 2},
+		{[]int{0, 0, 1, 1, 1, 2, 2, 3, 3, 4}, 5},
+		{[]int{1, 1, 1, 1, 1}, 1},
+		{[]int{1, 2, 3, 4, 5}, 5},
+		{[]int{}, 0},
+	}
+
+	for _, test := range tests {
+		result := removeDuplicates(test.input)
+		if result != test.expected {
+			t.Errorf("removeDuplicates(%v) = %v; expected %v", test.input, result, test.expected)
+		}
+	}
 }
