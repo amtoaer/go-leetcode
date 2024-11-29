@@ -2,44 +2,66 @@ package main
 
 import (
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 /*
  * @lc app=leetcode.cn id=189 lang=golang
+ * @lcpr version=20004
  *
- * [189] Rotate Array
+ * [189] 轮转数组
  */
 
-// @lc code=start
-func reverse(a []int) {
-	for i, n := 0, len(a); i < n/2; i++ {
-		a[i], a[n-i-1] = a[n-i-1], a[i]
-	}
-}
+// @lcpr-template-start
 
+// @lcpr-template-end
+// @lc code=start
 func rotate(nums []int, k int) {
-	l := len(nums)
-	k = k % l
-	reverse(nums)
-	reverse(nums[:k])
-	reverse(nums[k:])
+	reverse := func(i, j int) {
+		for i < j {
+			nums[i], nums[j] = nums[j], nums[i]
+			i++
+			j--
+		}
+	}
+	k %= len(nums)
+	reverse(0, len(nums)-1)
+	reverse(0, k-1)
+	reverse(k, len(nums)-1)
 }
 
 // @lc code=end
 
+/*
+// @lcpr case=start
+// [1,2,3,4,5,6,7]\n3\n
+// @lcpr case=end
+
+// @lcpr case=start
+// [-1,-100,3,99]\n2\n
+// @lcpr case=end
+
+*/
+
 func Test(t *testing.T) {
-	tc := []struct {
-		nums []int
-		k    int
-		want []int
+	tests := []struct {
+		nums     []int
+		k        int
+		expected []int
 	}{
 		{[]int{1, 2, 3, 4, 5, 6, 7}, 3, []int{5, 6, 7, 1, 2, 3, 4}},
 		{[]int{-1, -100, 3, 99}, 2, []int{3, 99, -1, -100}},
+		{[]int{1, 2, 3, 4, 5}, 1, []int{5, 1, 2, 3, 4}},
+		{[]int{1, 2}, 3, []int{2, 1}},
+		{[]int{1}, 0, []int{1}},
 	}
-	for _, tt := range tc {
-		rotate(tt.nums, tt.k)
-		assert.Equal(t, tt.want, tt.nums)
+
+	for _, test := range tests {
+		rotate(test.nums, test.k)
+		for i, v := range test.expected {
+			if test.nums[i] != v {
+				t.Errorf("For input nums=%v and k=%d, expected %v but got %v", test.nums, test.k, test.expected, test.nums)
+				break
+			}
+		}
 	}
 }
