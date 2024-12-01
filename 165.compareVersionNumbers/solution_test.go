@@ -1,56 +1,81 @@
 package main
 
 import (
-	"strconv"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 /*
  * @lc app=leetcode.cn id=165 lang=golang
+ * @lcpr version=20004
  *
- * [165] Compare Version Numbers
+ * [165] 比较版本号
  */
 
+// @lcpr-template-start
+
+// @lcpr-template-end
 // @lc code=start
 func compareVersion(version1 string, version2 string) int {
-	next := func(version string, idx int) (int, int) {
-		for i := idx; i <= len(version); i++ {
-			if i == len(version) || version[i] == '.' {
-				v, _ := strconv.Atoi(version[idx:i])
-				return v, i + 1
-			}
+	var cur1, cur2 int
+	for cur1 < len(version1) || cur2 < len(version2) {
+		var left, right int
+		for cur1 < len(version1) && version1[cur1] != '.' {
+			left = left*10 + int(version1[cur1]-'0')
+			cur1++
 		}
-		return 0, idx
-	}
-
-	var i, j, verLeft, verRight int
-	for i < len(version1) || j < len(version2) {
-		verLeft, i = next(version1, i)
-		verRight, j = next(version2, j)
-		if verLeft > verRight {
-			return 1
-		} else if verLeft < verRight {
+		for cur2 < len(version2) && version2[cur2] != '.' {
+			right = right*10 + int(version2[cur2]-'0')
+			cur2++
+		}
+		if left < right {
 			return -1
 		}
+		if left > right {
+			return 1
+		}
+		cur1++
+		cur2++
 	}
 	return 0
 }
 
 // @lc code=end
 
+/*
+// @lcpr case=start
+// "1.2"\n"1.10"\n
+// @lcpr case=end
+
+// @lcpr case=start
+// "1.01"\n"1.001"\n
+// @lcpr case=end
+
+// @lcpr case=start
+// "1.0"\n"1.0.0.0"\n
+// @lcpr case=end
+
+*/
+
 func Test(t *testing.T) {
-	tc := []struct {
+	tests := []struct {
 		version1 string
 		version2 string
-		want     int
+		expected int
 	}{
 		{"1.2", "1.10", -1},
 		{"1.01", "1.001", 0},
 		{"1.0", "1.0.0.0", 0},
+		{"0.1", "1.1", -1},
+		{"1.0.1", "1", 1},
+		{"7.5.2.4", "7.5.3", -1},
+		{"1.01", "1.001", 0},
+		{"1.0", "1.0.0", 0},
 	}
-	for _, tt := range tc {
-		assert.Equal(t, tt.want, compareVersion(tt.version1, tt.version2))
+
+	for _, test := range tests {
+		result := compareVersion(test.version1, test.version2)
+		if result != test.expected {
+			t.Errorf("compareVersion(%s, %s) = %d; expected %d", test.version1, test.version2, result, test.expected)
+		}
 	}
 }

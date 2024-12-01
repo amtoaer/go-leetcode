@@ -2,8 +2,6 @@ package main
 
 import (
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 type ListNode struct {
@@ -13,10 +11,14 @@ type ListNode struct {
 
 /*
  * @lc app=leetcode.cn id=2 lang=golang
+ * @lcpr version=20004
  *
- * [2] Add Two Numbers
+ * [2] 两数相加
  */
 
+// @lcpr-template-start
+
+// @lcpr-template-end
 // @lc code=start
 /**
  * Definition for singly-linked list.
@@ -26,37 +28,95 @@ type ListNode struct {
  * }
  */
 func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
-	dummyHead := &ListNode{}
-	curr := dummyHead
-	sum := 0
-	for l1 != nil || l2 != nil || sum != 0 {
+	var left int
+	dummy := &ListNode{}
+	cur := dummy
+	for l1 != nil || l2 != nil || left != 0 {
 		if l1 != nil {
-			sum = sum + l1.Val
+			left += l1.Val
 			l1 = l1.Next
 		}
 		if l2 != nil {
-			sum = sum + l2.Val
+			left += l2.Val
 			l2 = l2.Next
 		}
-		curr.Next = &ListNode{Val: sum % 10}
-		curr = curr.Next
-		sum /= 10
+		cur.Next = &ListNode{
+			Val: left % 10,
+		}
+		cur = cur.Next
+		left /= 10
 	}
-	return dummyHead.Next
+	return dummy.Next
 }
 
 // @lc code=end
 
+/*
+// @lcpr case=start
+// [2,4,3]\n[5,6,4]\n
+// @lcpr case=end
+
+// @lcpr case=start
+// [0]\n[0]\n
+// @lcpr case=end
+
+// @lcpr case=start
+// [9,9,9,9,9,9,9]\n[9,9,9,9]\n
+// @lcpr case=end
+
+*/
+
+func createList(nums []int) *ListNode {
+	dummy := &ListNode{}
+	cur := dummy
+	for _, num := range nums {
+		cur.Next = &ListNode{Val: num}
+		cur = cur.Next
+	}
+	return dummy.Next
+}
+
+func listToSlice(l *ListNode) []int {
+	var result []int
+	for l != nil {
+		result = append(result, l.Val)
+		l = l.Next
+	}
+	return result
+}
+
 func Test(t *testing.T) {
-	assert.Equal(
-		t,
-		addTwoNumbers(
-			&ListNode{Val: 2, Next: &ListNode{Val: 4, Next: &ListNode{Val: 3}}},
-			&ListNode{Val: 5, Next: &ListNode{Val: 6, Next: &ListNode{Val: 6}}},
-		),
-		&ListNode{
-			Val:  7,
-			Next: &ListNode{Val: 0, Next: &ListNode{Val: 0, Next: &ListNode{Val: 1}}},
-		},
-	)
+	tests := []struct {
+		l1       []int
+		l2       []int
+		expected []int
+	}{
+		{[]int{2, 4, 3}, []int{5, 6, 4}, []int{7, 0, 8}},
+		{[]int{0}, []int{0}, []int{0}},
+		{[]int{9, 9, 9, 9, 9, 9, 9}, []int{9, 9, 9, 9}, []int{8, 9, 9, 9, 0, 0, 0, 1}},
+		{[]int{1, 8}, []int{0}, []int{1, 8}},
+		{[]int{5}, []int{5}, []int{0, 1}},
+	}
+
+	for _, test := range tests {
+		l1 := createList(test.l1)
+		l2 := createList(test.l2)
+		result := addTwoNumbers(l1, l2)
+		resultSlice := listToSlice(result)
+		if !equal(resultSlice, test.expected) {
+			t.Errorf("addTwoNumbers(%v, %v) = %v; expected %v", test.l1, test.l2, resultSlice, test.expected)
+		}
+	}
+}
+
+func equal(a, b []int) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
 }
