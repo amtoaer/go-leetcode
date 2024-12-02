@@ -11,10 +11,14 @@ type ListNode struct {
 
 /*
  * @lc app=leetcode.cn id=92 lang=golang
+ * @lcpr version=20004
  *
- * [92] Reverse Linked List II
+ * [92] 反转链表 II
  */
 
+// @lcpr-template-start
+
+// @lcpr-template-end
 // @lc code=start
 /**
  * Definition for singly-linked list.
@@ -24,78 +28,97 @@ type ListNode struct {
  * }
  */
 func reverseBetween(head *ListNode, left int, right int) *ListNode {
-	dummy := &ListNode{Next: head}
-	pre := dummy
-	for i := 0; i < left-1; i++ {
-		pre = pre.Next
+	if head == nil {
+		return nil
 	}
-	cur := pre.Next
-	for i := 0; i < right-left; i++ {
+	if left == right {
+		return head
+	}
+	var prev *ListNode
+	cur := head
+	cnt := 1
+	for cnt != left {
+		prev = cur
+		cur = cur.Next
+		cnt++
+	}
+	before := prev
+	prev = cur
+	cur = cur.Next
+	leftNode := prev
+	for cnt != right {
 		next := cur.Next
-		cur.Next = next.Next
-		next.Next = pre.Next
-		pre.Next = next
+		cur.Next = prev
+		prev = cur
+		cur = next
+		cnt++
 	}
-	return dummy.Next
+	leftNode.Next = cur
+	if before != nil {
+		before.Next = prev
+		return head
+	}
+	return prev
 }
 
 // @lc code=end
 
-func Test(t *testing.T) {
-	var head *ListNode
-	var left int
-	var right int
-	var hope *ListNode
-	var ret *ListNode
+/*
+// @lcpr case=start
+// [1,2,3,4,5]\n2\n4\n
+// @lcpr case=end
 
-	head = &ListNode{
-		Val: 1,
-		Next: &ListNode{
-			Val:  2,
-			Next: &ListNode{Val: 3, Next: &ListNode{Val: 4, Next: &ListNode{Val: 5}}},
-		},
+// @lcpr case=start
+// [5]\n1\n1\n
+// @lcpr case=end
+
+*/
+
+func arrayToList(arr []int) *ListNode {
+	if len(arr) == 0 {
+		return nil
 	}
-	left = 2
-	right = 4
-	hope = &ListNode{
-		Val: 1,
-		Next: &ListNode{
-			Val:  4,
-			Next: &ListNode{Val: 3, Next: &ListNode{Val: 2, Next: &ListNode{Val: 5}}},
-		},
+	head := &ListNode{Val: arr[0]}
+	current := head
+	for _, val := range arr[1:] {
+		current.Next = &ListNode{Val: val}
+		current = current.Next
 	}
-	ret = reverseBetween(head, left, right)
-	for ret != nil {
-		if ret.Val != hope.Val {
-			t.Fatalf("hope %d but ret %d", hope.Val, ret.Val)
-		}
-		ret = ret.Next
-		hope = hope.Next
+	return head
+}
+
+func listToArray(head *ListNode) []int {
+	var arr []int
+	for head != nil {
+		arr = append(arr, head.Val)
+		head = head.Next
+	}
+	return arr
+}
+
+func TestReverseBetween(t *testing.T) {
+	tests := []struct {
+		head     []int
+		left     int
+		right    int
+		expected []int
+	}{
+		{[]int{1, 2, 3, 4, 5}, 2, 4, []int{1, 4, 3, 2, 5}},
+		{[]int{5}, 1, 1, []int{5}},
+		{[]int{1, 2, 3, 4, 5}, 1, 5, []int{5, 4, 3, 2, 1}},
+		{[]int{1, 2, 3, 4, 5}, 3, 4, []int{1, 2, 4, 3, 5}},
+		{[]int{1, 2}, 1, 2, []int{2, 1}},
 	}
 
-	head = &ListNode{Val: 5}
-	left = 1
-	right = 1
-	hope = &ListNode{Val: 5}
-	ret = reverseBetween(head, left, right)
-	for ret != nil {
-		if ret.Val != hope.Val {
-			t.Fatalf("hope %d but ret %d", hope.Val, ret.Val)
+	for _, test := range tests {
+		head := arrayToList(test.head)
+		result := reverseBetween(head, test.left, test.right)
+		resultArray := listToArray(result)
+		for i, v := range resultArray {
+			if v != test.expected[i] {
+				t.Errorf("For input %v, left %d, right %d, expected %v but got %v", test.head, test.left, test.right, test.expected, resultArray)
+				break
+			}
 		}
-		ret = ret.Next
-		hope = hope.Next
-	}
-
-	head = &ListNode{Val: 3, Next: &ListNode{Val: 5}}
-	left = 1
-	right = 2
-	hope = &ListNode{Val: 5, Next: &ListNode{Val: 3}}
-	ret = reverseBetween(head, left, right)
-	for ret != nil {
-		if ret.Val != hope.Val {
-			t.Fatalf("hope %d but ret %d", hope.Val, ret.Val)
-		}
-		ret = ret.Next
-		hope = hope.Next
 	}
 }

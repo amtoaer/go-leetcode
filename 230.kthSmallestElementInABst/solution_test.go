@@ -2,8 +2,6 @@ package main
 
 import (
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 type TreeNode struct {
@@ -14,10 +12,14 @@ type TreeNode struct {
 
 /*
  * @lc app=leetcode.cn id=230 lang=golang
+ * @lcpr version=20004
  *
- * [230] Kth Smallest Element in a BST
+ * [230] 二叉搜索树中第 K 小的元素
  */
 
+// @lcpr-template-start
+
+// @lcpr-template-end
 // @lc code=start
 /**
  * Definition for a binary tree node.
@@ -28,58 +30,48 @@ type TreeNode struct {
  * }
  */
 func kthSmallest(root *TreeNode, k int) int {
-	var res int
-	var inorder func(*TreeNode)
-	inorder = func(node *TreeNode) {
-		if node == nil {
+	var items []int
+	var traversal func(*TreeNode)
+	traversal = func(tn *TreeNode) {
+		if tn == nil {
 			return
 		}
-		inorder(node.Left)
-		if k <= 0 {
-			return
-		}
-		k--
-		if k == 0 {
-			res = node.Val
-		}
-		inorder(node.Right)
+		traversal(tn.Left)
+		items = append(items, tn.Val)
+		traversal(tn.Right)
 	}
-	inorder(root)
-	return res
+	traversal(root)
+	return items[k-1]
 }
 
 // @lc code=end
 
+/*
+// @lcpr case=start
+// [3,1,4,null,2]\n1\n
+// @lcpr case=end
+
+// @lcpr case=start
+// [5,3,6,2,4,null,null,1]\n3\n
+// @lcpr case=end
+
+*/
+
 func Test(t *testing.T) {
-	tc := []struct {
-		input  *TreeNode
-		k      int
-		output int
+	tests := []struct {
+		root     *TreeNode
+		k        int
+		expected int
 	}{
-		{
-			input: &TreeNode{
-				Val:   3,
-				Left:  &TreeNode{Val: 1, Right: &TreeNode{Val: 2}},
-				Right: &TreeNode{Val: 4},
-			},
-			k:      1,
-			output: 1,
-		},
-		{
-			input: &TreeNode{
-				Val: 5,
-				Left: &TreeNode{
-					Val:   3,
-					Left:  &TreeNode{Val: 2, Left: &TreeNode{Val: 1}},
-					Right: &TreeNode{Val: 4},
-				},
-				Right: &TreeNode{Val: 6},
-			},
-			k:      3,
-			output: 3,
-		},
+		{&TreeNode{3, &TreeNode{1, nil, &TreeNode{2, nil, nil}}, &TreeNode{4, nil, nil}}, 1, 1},
+		{&TreeNode{5, &TreeNode{3, &TreeNode{2, &TreeNode{1, nil, nil}, nil}, &TreeNode{4, nil, nil}}, &TreeNode{6, nil, nil}}, 3, 3},
+		{&TreeNode{5, &TreeNode{3, &TreeNode{2, &TreeNode{1, nil, nil}, nil}, &TreeNode{4, nil, nil}}, &TreeNode{6, nil, nil}}, 4, 4},
+		{&TreeNode{5, &TreeNode{3, &TreeNode{2, &TreeNode{1, nil, nil}, nil}, &TreeNode{4, nil, nil}}, &TreeNode{6, nil, nil}}, 5, 5},
 	}
-	for _, tt := range tc {
-		assert.Equal(t, kthSmallest(tt.input, tt.k), tt.output)
+
+	for _, test := range tests {
+		if result := kthSmallest(test.root, test.k); result != test.expected {
+			t.Errorf("kthSmallest(%v, %d) = %d; expected %d", test.root, test.k, result, test.expected)
+		}
 	}
 }

@@ -2,8 +2,6 @@ package main
 
 import (
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 type TreeNode struct {
@@ -14,10 +12,14 @@ type TreeNode struct {
 
 /*
  * @lc app=leetcode.cn id=236 lang=golang
+ * @lcpr version=20004
  *
- * [236] Lowest Common Ancestor of a Binary Tree
+ * [236] 二叉树的最近公共祖先
  */
 
+// @lcpr-template-start
+
+// @lcpr-template-end
 // @lc code=start
 /**
  * Definition for a binary tree node.
@@ -34,8 +36,7 @@ func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
 	if root.Val == p.Val || root.Val == q.Val {
 		return root
 	}
-	left := lowestCommonAncestor(root.Left, p, q)
-	right := lowestCommonAncestor(root.Right, p, q)
+	left, right := lowestCommonAncestor(root.Left, p, q), lowestCommonAncestor(root.Right, p, q)
 	if left != nil && right != nil {
 		return root
 	}
@@ -47,35 +48,79 @@ func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
 
 // @lc code=end
 
+/*
+// @lcpr case=start
+// [3,5,1,6,2,0,8,null,null,7,4]\n5\n1\n
+// @lcpr case=end
+
+// @lcpr case=start
+// [3,5,1,6,2,0,8,null,null,7,4]\n5\n4\n
+// @lcpr case=end
+
+// @lcpr case=start
+// [1,2]\n1\n2\n
+// @lcpr case=end
+
+*/
+
 func Test(t *testing.T) {
-	p := &TreeNode{Val: 5}
-	q := &TreeNode{Val: 1}
-	root := &TreeNode{
-		Val: 3,
-		Left: &TreeNode{
-			Val: 5,
-			Left: &TreeNode{
-				Val: 6,
-			},
-			Right: &TreeNode{
-				Val: 2,
-				Left: &TreeNode{
-					Val: 7,
+	tests := []struct {
+		root     *TreeNode
+		p        *TreeNode
+		q        *TreeNode
+		expected *TreeNode
+	}{
+		{
+			root: &TreeNode{3,
+				&TreeNode{5,
+					&TreeNode{6, nil, nil},
+					&TreeNode{2,
+						&TreeNode{7, nil, nil},
+						&TreeNode{4, nil, nil},
+					},
 				},
-				Right: &TreeNode{
-					Val: 4,
+				&TreeNode{1,
+					&TreeNode{0, nil, nil},
+					&TreeNode{8, nil, nil},
 				},
 			},
+			p:        &TreeNode{Val: 5},
+			q:        &TreeNode{Val: 1},
+			expected: &TreeNode{Val: 3},
 		},
-		Right: &TreeNode{
-			Val: 1,
-			Left: &TreeNode{
-				Val: 0,
+		{
+			root: &TreeNode{3,
+				&TreeNode{5,
+					&TreeNode{6, nil, nil},
+					&TreeNode{2,
+						&TreeNode{7, nil, nil},
+						&TreeNode{4, nil, nil},
+					},
+				},
+				&TreeNode{1,
+					&TreeNode{0, nil, nil},
+					&TreeNode{8, nil, nil},
+				},
 			},
-			Right: &TreeNode{
-				Val: 8,
+			p:        &TreeNode{Val: 5},
+			q:        &TreeNode{Val: 4},
+			expected: &TreeNode{Val: 5},
+		},
+		{
+			root: &TreeNode{1,
+				&TreeNode{2, nil, nil},
+				nil,
 			},
+			p:        &TreeNode{Val: 1},
+			q:        &TreeNode{Val: 2},
+			expected: &TreeNode{Val: 1},
 		},
 	}
-	assert.Equal(t, 3, lowestCommonAncestor(root, p, q).Val)
+
+	for _, test := range tests {
+		result := lowestCommonAncestor(test.root, test.p, test.q)
+		if result.Val != test.expected.Val {
+			t.Errorf("expected %v, got %v", test.expected.Val, result.Val)
+		}
+	}
 }

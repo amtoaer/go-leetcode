@@ -2,8 +2,6 @@ package main
 
 import (
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 type TreeNode struct {
@@ -14,10 +12,14 @@ type TreeNode struct {
 
 /*
  * @lc app=leetcode.cn id=100 lang=golang
+ * @lcpr version=20004
  *
- * [100] Same Tree
+ * [100] 相同的树
  */
 
+// @lcpr-template-start
+
+// @lcpr-template-end
 // @lc code=start
 /**
  * Definition for a binary tree node.
@@ -34,85 +36,72 @@ func isSameTree(p *TreeNode, q *TreeNode) bool {
 	if p == nil || q == nil {
 		return false
 	}
-	return p.Val == q.Val && isSameTree(p.Left, q.Left) && isSameTree(p.Right, q.Right)
+	if p.Val != q.Val {
+		return false
+	}
+	return isSameTree(p.Left, q.Left) && isSameTree(p.Right, q.Right)
 }
 
 // @lc code=end
 
+/*
+// @lcpr case=start
+// [1,2,3]\n[1,2,3]\n
+// @lcpr case=end
+
+// @lcpr case=start
+// [1,2]\n[1,null,2]\n
+// @lcpr case=end
+
+// @lcpr case=start
+// [1,2,1]\n[1,1,2]\n
+// @lcpr case=end
+
+*/
+
 func Test(t *testing.T) {
-	tc := []struct {
-		input1 *TreeNode
-		input2 *TreeNode
-		output bool
+	tests := []struct {
+		p    *TreeNode
+		q    *TreeNode
+		want bool
 	}{
 		{
-			&TreeNode{
-				Val:   1,
-				Left:  &TreeNode{Val: 2},
-				Right: &TreeNode{Val: 3},
-			},
-			&TreeNode{
-				Val:   1,
-				Left:  &TreeNode{Val: 2},
-				Right: &TreeNode{Val: 3},
-			},
-			true,
+			p:    &TreeNode{Val: 1, Left: &TreeNode{Val: 2}, Right: &TreeNode{Val: 3}},
+			q:    &TreeNode{Val: 1, Left: &TreeNode{Val: 2}, Right: &TreeNode{Val: 3}},
+			want: true,
 		},
 		{
-			&TreeNode{
-				Val:  1,
-				Left: &TreeNode{Val: 2},
-			},
-			&TreeNode{
-				Val:   1,
-				Right: &TreeNode{Val: 2},
-			},
-			false,
+			p:    &TreeNode{Val: 1, Left: &TreeNode{Val: 2}},
+			q:    &TreeNode{Val: 1, Right: &TreeNode{Val: 2}},
+			want: false,
 		},
 		{
-			&TreeNode{
-				Val:   1,
-				Left:  &TreeNode{Val: 2},
-				Right: &TreeNode{Val: 1},
-			},
-			&TreeNode{
-				Val:   1,
-				Left:  &TreeNode{Val: 1},
-				Right: &TreeNode{Val: 2},
-			},
-			false,
+			p:    &TreeNode{Val: 1, Left: &TreeNode{Val: 2}, Right: &TreeNode{Val: 1}},
+			q:    &TreeNode{Val: 1, Left: &TreeNode{Val: 1}, Right: &TreeNode{Val: 2}},
+			want: false,
 		},
 		{
-			&TreeNode{
-				Val:   1,
-				Left:  &TreeNode{Val: 2},
-				Right: &TreeNode{Val: 3},
-			},
-			&TreeNode{
-				Val:  1,
-				Left: &TreeNode{Val: 2},
-			},
-			false,
+			p:    nil,
+			q:    nil,
+			want: true,
 		},
 		{
-			&TreeNode{
-				Val:   1,
-				Left:  &TreeNode{Val: 2},
-				Right: &TreeNode{Val: 3},
-			},
-			&TreeNode{
-				Val:   1,
-				Right: &TreeNode{Val: 2},
-			},
-			false,
+			p:    &TreeNode{Val: 1},
+			q:    &TreeNode{Val: 1},
+			want: true,
 		},
 		{
-			nil,
-			nil,
-			true,
+			p:    &TreeNode{Val: 1},
+			q:    &TreeNode{Val: 2},
+			want: false,
 		},
 	}
-	for _, tt := range tc {
-		assert.Equal(t, tt.output, isSameTree(tt.input1, tt.input2))
+
+	for _, tt := range tests {
+		t.Run("", func(t *testing.T) {
+			if got := isSameTree(tt.p, tt.q); got != tt.want {
+				t.Errorf("isSameTree() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }

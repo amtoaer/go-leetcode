@@ -2,8 +2,6 @@ package main
 
 import (
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 type TreeNode struct {
@@ -14,10 +12,14 @@ type TreeNode struct {
 
 /*
  * @lc app=leetcode.cn id=103 lang=golang
+ * @lcpr version=20004
  *
- * [103] Binary Tree Zigzag Level Order Traversal
+ * [103] 二叉树的锯齿形层序遍历
  */
 
+// @lcpr-template-start
+
+// @lcpr-template-end
 // @lc code=start
 /**
  * Definition for a binary tree node.
@@ -32,44 +34,59 @@ func zigzagLevelOrder(root *TreeNode) [][]int {
 	if root == nil {
 		return res
 	}
-	nodes := []*TreeNode{root}
 	var flag bool
-	for len(nodes) > 0 {
-		lenNodes := len(nodes)
-		level := make([]int, 0, lenNodes)
-		for _, node := range nodes {
-			level = append(level, node.Val)
+	queue := []*TreeNode{root}
+	for len(queue) > 0 {
+		length := len(queue)
+		var row []int
+		for _, node := range queue[:length] {
+			row = append(row, node.Val)
 			if node.Left != nil {
-				nodes = append(nodes, node.Left)
+				queue = append(queue, node.Left)
 			}
 			if node.Right != nil {
-				nodes = append(nodes, node.Right)
+				queue = append(queue, node.Right)
 			}
 		}
 		if flag {
-			i, j := 0, lenNodes-1
-			for i < j {
-				level[i], level[j] = level[j], level[i]
-				i++
-				j--
+			left, right := 0, len(row)-1
+			for left < right {
+				row[left], row[right] = row[right], row[left]
+				left++
+				right--
 			}
 		}
+		res = append(res, row)
 		flag = !flag
-		res = append(res, level)
-		nodes = nodes[lenNodes:]
+		queue = queue[length:]
 	}
 	return res
 }
 
 // @lc code=end
 
+/*
+// @lcpr case=start
+// [3,9,20,null,null,15,7]\n
+// @lcpr case=end
+
+// @lcpr case=start
+// [1]\n
+// @lcpr case=end
+
+// @lcpr case=start
+// []\n
+// @lcpr case=end
+
+*/
+
 func Test(t *testing.T) {
-	tc := []struct {
-		input  *TreeNode
-		output [][]int
+	tests := []struct {
+		root     *TreeNode
+		expected [][]int
 	}{
 		{
-			input: &TreeNode{
+			root: &TreeNode{
 				Val: 3,
 				Left: &TreeNode{
 					Val: 9,
@@ -84,14 +101,72 @@ func Test(t *testing.T) {
 					},
 				},
 			},
-			output: [][]int{
+			expected: [][]int{
 				{3},
 				{20, 9},
 				{15, 7},
 			},
 		},
+		{
+			root: &TreeNode{
+				Val: 1,
+			},
+			expected: [][]int{
+				{1},
+			},
+		},
+		{
+			root:     nil,
+			expected: [][]int{},
+		},
+		{
+			root: &TreeNode{
+				Val: 1,
+				Left: &TreeNode{
+					Val: 2,
+					Left: &TreeNode{
+						Val: 4,
+					},
+					Right: &TreeNode{
+						Val: 5,
+					},
+				},
+				Right: &TreeNode{
+					Val: 3,
+					Right: &TreeNode{
+						Val: 6,
+					},
+				},
+			},
+			expected: [][]int{
+				{1},
+				{3, 2},
+				{4, 5, 6},
+			},
+		},
 	}
-	for _, tt := range tc {
-		assert.Equal(t, tt.output, zigzagLevelOrder(tt.input))
+
+	for _, test := range tests {
+		result := zigzagLevelOrder(test.root)
+		if !equal(result, test.expected) {
+			t.Errorf("For root %v, expected %v, but got %v", test.root, test.expected, result)
+		}
 	}
+}
+
+func equal(a, b [][]int) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if len(a[i]) != len(b[i]) {
+			return false
+		}
+		for j := range a[i] {
+			if a[i][j] != b[i][j] {
+				return false
+			}
+		}
+	}
+	return true
 }

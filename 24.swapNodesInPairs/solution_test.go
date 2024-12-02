@@ -2,8 +2,6 @@ package main
 
 import (
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 type ListNode struct {
@@ -13,10 +11,14 @@ type ListNode struct {
 
 /*
  * @lc app=leetcode.cn id=24 lang=golang
+ * @lcpr version=20004
  *
- * [24] Swap Nodes in Pairs
+ * [24] 两两交换链表中的节点
  */
 
+// @lcpr-template-start
+
+// @lcpr-template-end
 // @lc code=start
 /**
  * Definition for singly-linked list.
@@ -26,34 +28,97 @@ type ListNode struct {
  * }
  */
 func swapPairs(head *ListNode) *ListNode {
-	dummyHead := &ListNode{Next: head}
-	cur := dummyHead
-	for cur.Next != nil && cur.Next.Next != nil {
-		others := cur.Next.Next.Next
-		first := cur.Next
-		second := cur.Next.Next
-		cur.Next = second
-		second.Next = first
-		first.Next = others
-		cur = first
+	if head == nil || head.Next == nil {
+		return head
 	}
-	return dummyHead.Next
+	var res, prev *ListNode
+	cur := head
+	for cur != nil && cur.Next != nil {
+		if res == nil {
+			res = cur.Next
+		}
+		tmp := cur.Next
+		next := tmp.Next
+		tmp.Next = cur
+		cur.Next = next
+		if prev != nil {
+			prev.Next = tmp
+		}
+		prev = cur
+		cur = next
+	}
+	return res
 }
 
 // @lc code=end
 
+/*
+// @lcpr case=start
+// [1,2,3,4]\n
+// @lcpr case=end
+
+// @lcpr case=start
+// []\n
+// @lcpr case=end
+
+// @lcpr case=start
+// [1]\n
+// @lcpr case=end
+
+*/
+
+func createList(nums []int) *ListNode {
+	if len(nums) == 0 {
+		return nil
+	}
+	head := &ListNode{Val: nums[0]}
+	current := head
+	for _, num := range nums[1:] {
+		current.Next = &ListNode{Val: num}
+		current = current.Next
+	}
+	return head
+}
+
+func listToSlice(head *ListNode) []int {
+	var result []int
+	for head != nil {
+		result = append(result, head.Val)
+		head = head.Next
+	}
+	return result
+}
+
 func Test(t *testing.T) {
-	assert.Equal(
-		t,
-		&ListNode{
-			Val:  2,
-			Next: &ListNode{Val: 1, Next: &ListNode{Val: 4, Next: &ListNode{Val: 3}}},
-		},
-		swapPairs(
-			&ListNode{
-				Val:  1,
-				Next: &ListNode{Val: 2, Next: &ListNode{Val: 3, Next: &ListNode{Val: 4}}},
-			},
-		),
-	)
+	tests := []struct {
+		input    []int
+		expected []int
+	}{
+		{input: []int{1, 2, 3, 4}, expected: []int{2, 1, 4, 3}},
+		{input: []int{}, expected: []int{}},
+		{input: []int{1}, expected: []int{1}},
+		{input: []int{1, 2, 3}, expected: []int{2, 1, 3}},
+		{input: []int{1, 2}, expected: []int{2, 1}},
+	}
+
+	for _, test := range tests {
+		head := createList(test.input)
+		result := swapPairs(head)
+		resultSlice := listToSlice(result)
+		if !equal(resultSlice, test.expected) {
+			t.Errorf("For input %v, expected %v but got %v", test.input, test.expected, resultSlice)
+		}
+	}
+}
+
+func equal(a, b []int) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
 }
