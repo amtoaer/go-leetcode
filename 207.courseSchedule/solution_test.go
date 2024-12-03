@@ -2,51 +2,80 @@ package main
 
 import (
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 /*
  * @lc app=leetcode.cn id=207 lang=golang
+ * @lcpr version=20004
  *
- * [207] Course Schedule
+ * [207] 课程表
  */
 
+// @lcpr-template-start
+
+// @lcpr-template-end
 // @lc code=start
 func canFinish(numCourses int, prerequisites [][]int) bool {
-	var validCount int
-	outEdges := make([][]int, numCourses)
-	inEdgeCounts := make([]int, numCourses)
-	for _, outEdge := range prerequisites {
-		outEdges[outEdge[0]] = append(outEdges[outEdge[0]], outEdge[1])
-		inEdgeCounts[outEdge[1]]++
+	prerequisitesCnt := make([]int, numCourses)
+	nextCourses := make([][]int, numCourses)
+	for _, dep := range prerequisites {
+		prerequisitesCnt[dep[0]]++
+		nextCourses[dep[1]] = append(nextCourses[dep[1]], dep[0])
 	}
-	var nodeQueue []int
-	for node, inEdgeCount := range inEdgeCounts {
-		if inEdgeCount == 0 {
-			nodeQueue = append(nodeQueue, node)
+	var validCnt int
+	var queue []int
+	for idx, cnt := range prerequisitesCnt {
+		if cnt == 0 {
+			queue = append(queue, idx)
 		}
 	}
-	for len(nodeQueue) != 0 {
-		length := len(nodeQueue)
-		validCount += length
-		for _, node := range nodeQueue[:length] {
-			for _, targetNode := range outEdges[node] {
-				inEdgeCounts[targetNode]--
-				if inEdgeCounts[targetNode] == 0 {
-					nodeQueue = append(nodeQueue, targetNode)
+	for len(queue) > 0 {
+		length := len(queue)
+		validCnt += length
+		for _, course := range queue[:length] {
+			for _, nextIdx := range nextCourses[course] {
+				prerequisitesCnt[nextIdx]--
+				if prerequisitesCnt[nextIdx] == 0 {
+					queue = append(queue, nextIdx)
 				}
 			}
 		}
-		nodeQueue = nodeQueue[length:]
+		queue = queue[length:]
 	}
-	return validCount == numCourses
+	return validCnt == numCourses
 }
 
 // @lc code=end
 
+/*
+// @lcpr case=start
+// 2\n[[1,0]]\n
+// @lcpr case=end
+
+// @lcpr case=start
+// 2\n[[1,0],[0,1]]\n
+// @lcpr case=end
+
+*/
+
 func Test(t *testing.T) {
-	assert.Equal(t, true, canFinish(2, [][]int{{1, 0}}))
-	assert.Equal(t, false, canFinish(2, [][]int{{1, 0}, {0, 1}}))
-	assert.Equal(t, true, canFinish(3, [][]int{{1, 0}, {2, 0}}))
+	tests := []struct {
+		numCourses    int
+		prerequisites [][]int
+		expected      bool
+	}{
+		{2, [][]int{{0, 1}}, true},
+		{2, [][]int{{1, 0}}, true},
+		{2, [][]int{{1, 0}, {0, 1}}, false},
+		{4, [][]int{{1, 0}, {2, 1}, {3, 2}}, true},
+		{3, [][]int{{1, 0}, {2, 1}, {0, 2}}, false},
+		{5, [][]int{{1, 0}, {2, 1}, {3, 2}, {4, 3}}, true},
+	}
+
+	for _, test := range tests {
+		result := canFinish(test.numCourses, test.prerequisites)
+		if result != test.expected {
+			t.Errorf("canFinish(%d, %v) = %v; expected %v", test.numCourses, test.prerequisites, result, test.expected)
+		}
+	}
 }

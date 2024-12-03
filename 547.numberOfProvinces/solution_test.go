@@ -2,13 +2,11 @@ package main
 
 import (
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 /*
  * @lc app=leetcode.cn id=547 lang=golang
- * @lcpr version=20001
+ * @lcpr version=20004
  *
  * [547] 省份数量
  */
@@ -18,22 +16,21 @@ import (
 // @lcpr-template-end
 // @lc code=start
 func findCircleNum(isConnected [][]int) int {
-	visited := make([]bool, len(isConnected))
-	var res int
 	var dfs func(int)
-	dfs = func(idx int) {
-		visited[idx] = true
-		for i := 0; i < len(isConnected); i++ {
-			if isConnected[idx][i] == 1 && !visited[i] {
-				dfs(i)
+	visited := make([]bool, len(isConnected))
+	dfs = func(i int) {
+		visited[i] = true
+		for nextIdx, next := range isConnected[i] {
+			if next == 1 && !visited[nextIdx] {
+				dfs(nextIdx)
 			}
 		}
 	}
-
-	for i := 0; i < len(isConnected); i++ {
-		if !visited[i] {
+	var res int
+	for idx := range isConnected {
+		if !visited[idx] {
 			res++
-			dfs(i)
+			dfs(idx)
 		}
 	}
 	return res
@@ -53,15 +50,20 @@ func findCircleNum(isConnected [][]int) int {
 */
 
 func Test(t *testing.T) {
-	type Case struct {
+	tests := []struct {
 		isConnected [][]int
-		res         int
+		expected    int
+	}{
+		{[][]int{{1, 1, 0}, {1, 1, 0}, {0, 0, 1}}, 2},
+		{[][]int{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}}, 3},
+		{[][]int{{1, 1, 0, 0}, {1, 1, 0, 0}, {0, 0, 1, 1}, {0, 0, 1, 1}}, 2},
+		{[][]int{{1, 0, 0, 1}, {0, 1, 1, 0}, {0, 1, 1, 1}, {1, 0, 1, 1}}, 1},
 	}
-	cases := []Case{
-		{isConnected: [][]int{{1, 1, 0}, {1, 1, 0}, {0, 0, 1}}, res: 2},
-		{isConnected: [][]int{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}}, res: 3},
-	}
-	for _, c := range cases {
-		assert.Equal(t, c.res, findCircleNum(c.isConnected))
+
+	for _, test := range tests {
+		result := findCircleNum(test.isConnected)
+		if result != test.expected {
+			t.Errorf("For isConnected = %v, expected %d, but got %d", test.isConnected, test.expected, result)
+		}
 	}
 }
