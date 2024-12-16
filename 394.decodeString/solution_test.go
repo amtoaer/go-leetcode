@@ -1,69 +1,107 @@
 package main
 
 import (
+	"strings"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 /*
  * @lc app=leetcode.cn id=394 lang=golang
+ * @lcpr version=20004
  *
- * [394] Decode String
+ * [394] 字符串解码
  */
 
+// @lcpr-template-start
+
+// @lcpr-template-end
 // @lc code=start
 func decodeString(s string) string {
 	var (
-		stack []byte
-		ints  []int
-		pos   int
+		nums []int
+		strs []string
+		i    int
+		sb   strings.Builder
 	)
-	for pos < len(s) {
-		cur := s[pos]
-		if cur >= '0' && cur <= '9' {
-			val := 0
-			for s[pos] >= '0' && s[pos] <= '9' {
-				val = val*10 + int(s[pos]-'0')
-				pos++
+	for i < len(s) {
+		if s[i] >= '0' && s[i] <= '9' {
+			num := 0
+			for i < len(s) && s[i] >= '0' && s[i] <= '9' {
+				num = num*10 + int(s[i]-'0')
+				i++
 			}
-			ints = append(ints, val)
-		} else if (cur >= 'a' && cur <= 'z') || (cur >= 'A' && cur <= 'Z') || cur == '[' {
-			stack = append(stack, cur)
-			pos++
+			nums = append(nums, num)
+		} else if s[i] >= 'a' && s[i] <= 'z' {
+			start := i
+			for i < len(s) && s[i] >= 'a' && s[i] <= 'z' {
+				i++
+			}
+			strs = append(strs, string(s[start:i]))
+		} else if s[i] == '[' {
+			strs = append(strs, "[")
+			i++
 		} else {
-			// 遇到了 ]
-			i := len(stack) - 1
-			for stack[i] != '[' {
-				i--
+			left := len(strs) - 1
+			for strs[left] != "[" {
+				left--
 			}
-			// IMPORTANT: 需要重复的部分引用了 stack 的后面一部分，需要深拷贝，不然 append 过程中会被覆盖
-			needRepeated := append([]byte{}, stack[i+1:]...)
-			stack = stack[:i]
-			val := ints[len(ints)-1]
-			ints = ints[:len(ints)-1]
-			for j := 0; j < val; j++ {
-				stack = append(stack, needRepeated...)
+			for _, str := range strs[left+1:] {
+				sb.WriteString(str)
 			}
-			pos++
+			num := nums[len(nums)-1]
+			strs = strs[:left]
+			nums = nums[:len(nums)-1]
+			strs = append(strs, strings.Repeat(sb.String(), num))
+			sb.Reset()
+			i++
 		}
 	}
-	return string(stack)
+	for _, str := range strs {
+		sb.WriteString(str)
+	}
+	return sb.String()
 }
 
 // @lc code=end
 
+/*
+// @lcpr case=start
+// "3[a]2[bc]"\n
+// @lcpr case=end
+
+// @lcpr case=start
+// "3[a2[c]]"\n
+// @lcpr case=end
+
+// @lcpr case=start
+// "2[abc]3[cd]ef"\n
+// @lcpr case=end
+
+// @lcpr case=start
+// "abc3[cd]xyz"\n
+// @lcpr case=end
+
+*/
+
 func Test(t *testing.T) {
-	tc := []struct {
-		input  string
-		output string
+	tests := []struct {
+		input    string
+		expected string
 	}{
 		{"3[a]2[bc]", "aaabcbc"},
 		{"3[a2[c]]", "accaccacc"},
 		{"2[abc]3[cd]ef", "abcabccdcdcdef"},
 		{"abc3[cd]xyz", "abccdcdcdxyz"},
+		{"10[a]", "aaaaaaaaaa"},
+		{"2[3[a]b]", "aaabaaab"},
 	}
-	for _, tt := range tc {
-		assert.Equal(t, tt.output, decodeString(tt.input))
+
+	for _, test := range tests {
+		t.Run(test.input, func(t *testing.T) {
+			result := decodeString(test.input)
+			if result != test.expected {
+				t.Errorf("expected %s, got %s", test.expected, result)
+			}
+		})
 	}
 }
