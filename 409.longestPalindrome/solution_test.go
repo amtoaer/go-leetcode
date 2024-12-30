@@ -2,50 +2,66 @@ package main
 
 import (
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 /*
  * @lc app=leetcode.cn id=409 lang=golang
+ * @lcpr version=20004
  *
- * [409] Longest Palindrome
+ * [409] 最长回文串
  */
 
+// @lcpr-template-start
+
+// @lcpr-template-end
 // @lc code=start
 func longestPalindrome(s string) int {
-	m := make(map[byte]int)
-	for i := 0; i < len(s); i++ {
-		m[s[i]]++
+	m := make(map[rune]int)
+	for _, r := range s {
+		m[r]++
 	}
-	res := 0
-	hasOdd := false
-	for _, v := range m {
-		if v&1 == 0 {
-			res += v
-		} else if hasOdd {
-			res += v - 1
-		} else {
-			res += v
-			hasOdd = true
-		}
+	var (
+		res    int
+		hasOdd bool
+	)
+	for _, c := range m {
+		res += c - c%2
+		hasOdd = hasOdd || c&1 == 1
+	}
+	if hasOdd {
+		res += 1
 	}
 	return res
 }
 
 // @lc code=end
 
+/*
+// @lcpr case=start
+// "abccccdd"\n
+// @lcpr case=end
+
+// @lcpr case=start
+// "a"\n
+// @lcpr case=end
+
+*/
+
 func Test(t *testing.T) {
-	tc := []struct {
-		input  string
-		output int
+	tests := []struct {
+		input    string
+		expected int
 	}{
 		{"abccccdd", 7},
 		{"a", 1},
 		{"bb", 2},
-		{"ab", 1},
+		{"ccc", 3},
+		{"bananas", 5},
 	}
-	for _, tt := range tc {
-		assert.Equal(t, tt.output, longestPalindrome(tt.input))
+
+	for _, test := range tests {
+		if result := longestPalindrome(test.input); result != test.expected {
+			t.Errorf("For input '%s', expected %d but got %d", test.input, test.expected, result)
+		}
 	}
 }
