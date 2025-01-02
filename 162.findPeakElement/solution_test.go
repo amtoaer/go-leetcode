@@ -2,28 +2,25 @@ package main
 
 import (
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 /*
  * @lc app=leetcode.cn id=162 lang=golang
+ * @lcpr version=20004
  *
- * [162] Find Peak Element
+ * [162] 寻找峰值
  */
 
+// @lcpr-template-start
+
+// @lcpr-template-end
 // @lc code=start
 func findPeakElement(nums []int) int {
 	left, right := 0, len(nums)-1
 	for left <= right {
 		mid := left + (right-left)>>1
-		var gtLeft, gtRight bool
-		if mid == 0 || nums[mid] > nums[mid-1] {
-			gtLeft = true
-		}
-		if mid == len(nums)-1 || nums[mid] > nums[mid+1] {
-			gtRight = true
-		}
+		gtLeft := mid <= 0 || nums[mid] > nums[mid-1]
+		gtRight := mid >= len(nums)-1 || nums[mid] > nums[mid+1]
 		if gtLeft && gtRight {
 			return mid
 		}
@@ -33,20 +30,38 @@ func findPeakElement(nums []int) int {
 			right = mid - 1
 		}
 	}
-	return 0
+	return -1
 }
 
 // @lc code=end
 
+/*
+// @lcpr case=start
+// [1,2,3,1]\n
+// @lcpr case=end
+
+// @lcpr case=start
+// [1,2,1,3,5,6,4]\n
+// @lcpr case=end
+
+*/
+
 func Test(t *testing.T) {
-	tc := []struct {
-		input  []int
-		output int
+	tests := []struct {
+		nums     []int
+		expected int
 	}{
 		{[]int{1, 2, 3, 1}, 2},
 		{[]int{1, 2, 1, 3, 5, 6, 4}, 5},
+		{[]int{1, 2, 3, 4, 5}, 4},
+		{[]int{5, 4, 3, 2, 1}, 0},
+		{[]int{1, 3, 2, 1}, 1},
 	}
-	for _, tt := range tc {
-		assert.Equal(t, tt.output, findPeakElement(tt.input))
+
+	for _, test := range tests {
+		result := findPeakElement(test.nums)
+		if result != test.expected {
+			t.Errorf("For nums %v, expected %d, but got %d", test.nums, test.expected, result)
+		}
 	}
 }

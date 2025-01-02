@@ -2,45 +2,65 @@ package main
 
 import (
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 /*
  * @lc app=leetcode.cn id=69 lang=golang
+ * @lcpr version=20004
  *
- * [69] Sqrt(x)
+ * [69] x 的平方根
  */
 
+// @lcpr-template-start
+
+// @lcpr-template-end
 // @lc code=start
 func mySqrt(x int) int {
-	left, right := 0, x
-	ans := -1
+	var (
+		left, right = 0, x
+		res         = -1
+	)
 	for left <= right {
 		mid := left + (right-left)/2
-		if mid*mid <= x {
-			ans = mid
-			left = mid + 1
-		} else {
+		if mid*mid > x {
 			right = mid - 1
+		} else {
+			res = mid
+			left = mid + 1
 		}
 	}
-	return ans
+	return res
 }
 
 // @lc code=end
 
+/*
+// @lcpr case=start
+// 4\n
+// @lcpr case=end
+
+// @lcpr case=start
+// 8\n
+// @lcpr case=end
+
+*/
+
 func Test(t *testing.T) {
-	tc := []struct {
-		input  int
-		output int
+	tests := []struct {
+		input    int
+		expected int
 	}{
 		{4, 2},
 		{8, 2},
-		{9, 3},
-		{10, 3},
+		{0, 0},
+		{1, 1},
+		{16, 4},
+		{25, 5},
+		{100, 10},
 	}
-	for _, tt := range tc {
-		assert.Equal(t, tt.output, mySqrt(tt.input))
+	for _, test := range tests {
+		if got := mySqrt(test.input); got != test.expected {
+			t.Errorf("mySqrt(%d) = %d; want %d", test.input, got, test.expected)
+		}
 	}
 }

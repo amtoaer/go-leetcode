@@ -1,20 +1,22 @@
 package main
 
 import (
-	"reflect"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 /*
  * @lc app=leetcode.cn id=130 lang=golang
+ * @lcpr version=20004
  *
- * [130] Surrounded Regions
+ * [130] 被围绕的区域
  */
 
+// @lcpr-template-start
+
+// @lcpr-template-end
 // @lc code=start
-var directions = [][2]int{
+
+var directions = [][]int{
 	{0, 1},
 	{0, -1},
 	{1, 0},
@@ -27,32 +29,24 @@ func solve(board [][]byte) {
 		if i < 0 || i >= len(board) || j < 0 || j >= len(board[0]) || board[i][j] != 'O' {
 			return
 		}
-		board[i][j] = 'A'
+		board[i][j] = 'Z'
 		for _, direction := range directions {
 			dfs(i+direction[0], j+direction[1])
 		}
 	}
 	for i := 0; i < len(board); i++ {
-		if board[i][0] == 'O' {
-			dfs(i, 0)
-		}
-		if board[i][len(board[0])-1] == 'O' {
-			dfs(i, len(board[0])-1)
-		}
+		dfs(i, 0)
+		dfs(i, len(board[0])-1)
 	}
 	for j := 0; j < len(board[0]); j++ {
-		if board[0][j] == 'O' {
-			dfs(0, j)
-		}
-		if board[len(board)-1][j] == 'O' {
-			dfs(len(board)-1, j)
-		}
+		dfs(0, j)
+		dfs(len(board)-1, j)
 	}
 	for i := 0; i < len(board); i++ {
 		for j := 0; j < len(board[0]); j++ {
 			if board[i][j] == 'O' {
 				board[i][j] = 'X'
-			} else if board[i][j] == 'A' {
+			} else if board[i][j] == 'Z' {
 				board[i][j] = 'O'
 			}
 		}
@@ -61,17 +55,76 @@ func solve(board [][]byte) {
 
 // @lc code=end
 
+/*
+// @lcpr case=start
+// [["X","X","X","X"],["X","O","O","X"],["X","X","O","X"],["X","O","X","X"]]\n
+// @lcpr case=end
+
+// @lcpr case=start
+// [["X"]]\n
+// @lcpr case=end
+
+*/
+
 func Test(t *testing.T) {
-	tc := []struct {
-		input  [][]byte
-		output [][]byte
+	tests := []struct {
+		board    [][]byte
+		expected [][]byte
 	}{
-		{[][]byte{{'X', 'X', 'X', 'X'}, {'X', 'O', 'O', 'X'}, {'X', 'X', 'O', 'X'}, {'X', 'O', 'X', 'X'}}, [][]byte{{'X', 'X', 'X', 'X'}, {'X', 'X', 'X', 'X'}, {'X', 'X', 'X', 'X'}, {'X', 'O', 'X', 'X'}}},
-		{[][]byte{{'X'}}, [][]byte{{'X'}}},
-		{[][]byte{{'O'}}, [][]byte{{'O'}}},
+		{
+			board: [][]byte{
+				{'X', 'X', 'X', 'X'},
+				{'X', 'O', 'O', 'X'},
+				{'X', 'X', 'O', 'X'},
+				{'X', 'O', 'X', 'X'},
+			},
+			expected: [][]byte{
+				{'X', 'X', 'X', 'X'},
+				{'X', 'X', 'X', 'X'},
+				{'X', 'X', 'X', 'X'},
+				{'X', 'O', 'X', 'X'},
+			},
+		},
+		{
+			board: [][]byte{
+				{'X'},
+			},
+			expected: [][]byte{
+				{'X'},
+			},
+		},
+		{
+			board: [][]byte{
+				{'O', 'O'},
+				{'O', 'O'},
+			},
+			expected: [][]byte{
+				{'O', 'O'},
+				{'O', 'O'},
+			},
+		},
+		{
+			board: [][]byte{
+				{'X', 'O', 'X'},
+				{'O', 'X', 'O'},
+				{'X', 'O', 'X'},
+			},
+			expected: [][]byte{
+				{'X', 'O', 'X'},
+				{'O', 'X', 'O'},
+				{'X', 'O', 'X'},
+			},
+		},
 	}
-	for _, tt := range tc {
-		solve(tt.input)
-		assert.True(t, reflect.DeepEqual(tt.input, tt.output))
+
+	for _, test := range tests {
+		solve(test.board)
+		for i := range test.board {
+			for j := range test.board[i] {
+				if test.board[i][j] != test.expected[i][j] {
+					t.Errorf("expected %v, but got %v", test.expected, test.board)
+				}
+			}
+		}
 	}
 }
