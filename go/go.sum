@@ -1,0 +1,4 @@
+github.com/goccy/go-json v0.10.0 h1:mXKd9Qw4NuzShiRlOXKews24ufknHO7gx30lsDyokKA=
+github.com/goccy/go-json v0.10.0/go.mod h1:6MelG93GURQebXPDq3khkgXZkazVtN9CRI+MGFi0w8I=
+github.com/j178/leetgo/testutils/go v0.2.1 h1:b6vWZmSZiXRqlAsnlq9WJC85hNN4bzGrnavy1mb6shE=
+github.com/j178/leetgo/testutils/go v0.2.1/go.mod h1:m4VquSOufm2jcOyXW7P52fWa8adQim5XoQSEAJX2hw8=
