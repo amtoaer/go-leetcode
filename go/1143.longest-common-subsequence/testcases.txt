@@ -1,0 +1,17 @@
+input:
+"abcde"
+"ace"
+output:
+3
+
+input:
+"abc"
+"abc"
+output:
+3
+
+input:
+"abc"
+"def"
+output:
+0

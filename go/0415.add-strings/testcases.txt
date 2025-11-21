@@ -1,0 +1,17 @@
+input:
+"11"
+"123"
+output:
+"134"
+
+input:
+"456"
+"77"
+output:
+"533"
+
+input:
+"0"
+"0"
+output:
+"0"

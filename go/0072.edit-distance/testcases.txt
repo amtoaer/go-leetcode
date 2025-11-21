@@ -1,0 +1,11 @@
+input:
+"horse"
+"ros"
+output:
+3
+
+input:
+"intention"
+"execution"
+output:
+5
