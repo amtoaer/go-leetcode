@@ -1,0 +1,17 @@
+input:
+"2"
+"3"
+output:
+"6"
+
+input:
+"123"
+"456"
+output:
+"56088"
+
+input:
+"9133"
+"0"
+output:
+"0"
