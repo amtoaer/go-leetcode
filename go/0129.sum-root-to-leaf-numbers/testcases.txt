@@ -1,0 +1,9 @@
+input:
+[1,2,3]
+output:
+25
+
+input:
+[4,9,0,5,1]
+output:
+1026

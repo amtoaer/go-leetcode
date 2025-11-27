@@ -1,0 +1,14 @@
+input:
+"(()"
+output:
+2
+
+input:
+")()())"
+output:
+4
+
+input:
+""
+output:
+0
