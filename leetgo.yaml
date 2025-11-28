@@ -66,11 +66,11 @@ contest:
 editor:
   # Use a predefined editor: vim, vscode, goland
   # Set to 'none' to disable, set to 'custom' to provide your own command and args.
-  use: "none"
+  use: "custom"
   # Custom command to open files.
-  command: ""
+  command: "zed"
   # Arguments to your custom command.
   # String contains {{.CodeFile}}, {{.TestFile}}, {{.DescriptionFile}}, {{.TestCasesFile}} will be replaced with corresponding file path.
   # {{.Folder}} will be substituted with the output directory.
   # {{.Files}} will be substituted with the list of all file paths.
-  args: ""
+  args: "/Users/amtoaer/code/go/go-leetcode {{.CodeFile}}"
