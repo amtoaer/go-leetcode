@@ -1,0 +1,17 @@
+input:
+"leetcode"
+["leet","code"]
+output:
+true
+
+input:
+"applepenapple"
+["apple","pen"]
+output:
+true
+
+input:
+"catsandog"
+["cats","dog","sand","and","cat"]
+output:
+false
