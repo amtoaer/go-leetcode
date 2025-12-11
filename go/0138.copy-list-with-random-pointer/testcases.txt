@@ -1,0 +1,14 @@
+input:
+[[7,null],[13,0],[11,4],[10,2],[1,0]]
+output:
+
+
+input:
+[[1,1],[2,1]]
+output:
+
+
+input:
+[[3,null],[3,0],[3,null]]
+output:
+
