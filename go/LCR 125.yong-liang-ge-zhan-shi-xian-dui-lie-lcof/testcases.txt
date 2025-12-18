@@ -1,0 +1,5 @@
+input:
+["CQueue","appendTail","deleteHead","deleteHead","deleteHead"]
+[[],[3],[],[],[]]
+output:
+
